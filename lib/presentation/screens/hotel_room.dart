@@ -1,11 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hotel_booking/data/models/rooms_model.dart';
+import 'package:hotel_booking/presentation/bloc/rooms_bloc/rooms_bloc.dart';
 import 'package:hotel_booking/presentation/screens/booking_room.dart';
+import 'package:hotel_booking/presentation/widgets/carousel_slider.dart';
 import 'package:hotel_booking/presentation/widgets/custom_appbar.dart';
 import 'package:hotel_booking/presentation/widgets/custom_button.dart';
+import 'package:hotel_booking/presentation/widgets/peculiarities.dart';
+import 'package:hotel_booking/presentation/widgets/white_block.dart';
 import 'package:hotel_booking/utils/colors.dart';
+import 'package:hotel_booking/utils/price_format.dart';
+import 'package:hotel_booking/utils/text_styles.dart';
 
-class HotelRoom extends StatelessWidget {
+class HotelRoom extends StatefulWidget {
   const HotelRoom({super.key});
+
+  @override
+  State<HotelRoom> createState() => _HotelRoomState();
+}
+
+class _HotelRoomState extends State<HotelRoom> {
+  List<Room>? rooms;
+
+  @override
+  void initState() {
+    BlocProvider.of<RoomsBloc>(context).add(GetRoomsEvent());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,43 +34,59 @@ class HotelRoom extends StatelessWidget {
       appBar: CustomAppBar(
         title: 'Steigenberger Makadi',
       ),
-      body: SingleChildScrollView(
-          child: Column(
-        children: [
-          const SizedBox(
-            height: 8,
-          ),
-          buildRoomItem(context),
-          const SizedBox(
-            height: 8,
-          ),
-          buildRoomItem(context)
-        ],
-      )),
+      body: BlocConsumer<RoomsBloc, RoomsState>(
+        listener: (context, state) {
+          if (state is RoomsError) {
+            print('error');
+          }
+        },
+        builder: (context, state) {
+          if (state is RoomsLoading) {
+            return const CircularProgressIndicator();
+          } else if (state is RoomsLoaded) {
+            rooms = state.rooms.rooms;
+          }
+          return ListView.separated(
+              shrinkWrap: true,
+              itemBuilder: (context, index) =>
+                  buildRoomItem(context, rooms?[index]),
+              separatorBuilder: (context, index) => const SizedBox(
+                    height: 8,
+                  ),
+              itemCount: rooms?.length ?? 0);
+        },
+      ),
     );
   }
 
-  Widget buildRoomItem(context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(12)),
+  Widget buildRoomItem(BuildContext context, Room? room) {
+    return WhiteBlock(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Стандартный с видом на бассейн или сад',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+          CarouselImageSlider(
+            photoUrls: room?.imageUrls ?? [],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            room?.name ?? '',
+            style: textStyle22,
+          ),
+          const SizedBox(height: 8),
+          Peculiarities(
+            peculiarities: room != null ? room.peculiarities : [],
           ),
           const SizedBox(height: 8),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            padding:
+                const EdgeInsets.only(left: 10, right: 2, top: 5, bottom: 5),
             decoration: BoxDecoration(
                 color: AppColors.lightBlue.withOpacity(.1),
                 borderRadius: BorderRadius.circular(5)),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: const [
                 Text(
                   'Подробнее о номере',
@@ -59,23 +96,24 @@ class HotelRoom extends StatelessWidget {
                       fontWeight: FontWeight.w500),
                 ),
                 Icon(
-                  Icons.arrow_forward_ios,
+                  Icons.chevron_right_rounded,
                   color: AppColors.lightBlue,
-                ),
+                )
               ],
             ),
           ),
           const SizedBox(height: 16),
           Row(
-            children: const [
+            children: [
               Text(
-                '186 600 ₽',
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+                '${formatPrice(room?.price ?? 0)} ₽',
+                style:
+                    const TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
-                'за 7 ночей с перелётом',
-                style: TextStyle(fontSize: 16, color: AppColors.grey),
+                room?.pricePer ?? '',
+                style: const TextStyle(fontSize: 16, color: AppColors.grey),
               )
             ],
           ),

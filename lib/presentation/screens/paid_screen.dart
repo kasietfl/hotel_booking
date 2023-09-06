@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hotel_booking/presentation/widgets/custom_appbar.dart';
 import 'package:hotel_booking/presentation/widgets/custom_button.dart';
 import 'package:hotel_booking/utils/colors.dart';
+import 'package:hotel_booking/utils/text_styles.dart';
 
 class PaidScreen extends StatelessWidget {
   const PaidScreen({super.key});
@@ -27,7 +28,7 @@ class PaidScreen extends StatelessWidget {
             const SizedBox(height: 32),
             const Text(
               'Ваш заказ принят в работу',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+              style: textStyle22,
             ),
             const SizedBox(height: 20),
             Text(
@@ -36,7 +37,11 @@ class PaidScreen extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const Spacer(),
-            CustomButton(title: 'Супер!', onPress: () {})
+            CustomButton(
+                title: 'Супер!',
+                onPress: () {
+                  Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+                })
           ],
         ),
       ),
