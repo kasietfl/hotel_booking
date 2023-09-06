@@ -33,7 +33,7 @@ class PaidScreen extends StatelessWidget {
             const SizedBox(height: 20),
             Text(
               'Подтверждение заказа №$bookingNumber может занять некоторое время (от 1 часа до суток). Как только мы получим ответ от туроператора, вам на почту придет уведомление.',
-              style: const TextStyle(fontSize: 16, color: AppColors.grey),
+              style: textStyle16.copyWith(color: AppColors.grey),
               textAlign: TextAlign.center,
             ),
             const Spacer(),

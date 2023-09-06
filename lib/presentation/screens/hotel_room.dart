@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:hotel_booking/data/models/rooms_model.dart';
 import 'package:hotel_booking/presentation/bloc/rooms_bloc/rooms_bloc.dart';
 import 'package:hotel_booking/presentation/screens/booking_room.dart';
@@ -13,7 +15,8 @@ import 'package:hotel_booking/utils/price_format.dart';
 import 'package:hotel_booking/utils/text_styles.dart';
 
 class HotelRoom extends StatefulWidget {
-  const HotelRoom({super.key});
+  final String? title;
+  const HotelRoom({super.key, this.title});
 
   @override
   State<HotelRoom> createState() => _HotelRoomState();
@@ -32,17 +35,25 @@ class _HotelRoomState extends State<HotelRoom> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'Steigenberger Makadi',
-      ),
+          title: widget.title ?? "",
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          )),
       body: BlocConsumer<RoomsBloc, RoomsState>(
         listener: (context, state) {
           if (state is RoomsError) {
-            print('error');
+            Fluttertoast.showToast(
+                msg: state.error,
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                backgroundColor: Colors.red,
+                textColor: Colors.white);
           }
         },
         builder: (context, state) {
           if (state is RoomsLoading) {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           } else if (state is RoomsLoaded) {
             rooms = state.rooms.rooms;
           }
@@ -64,18 +75,11 @@ class _HotelRoomState extends State<HotelRoom> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CarouselImageSlider(
-            photoUrls: room?.imageUrls ?? [],
-          ),
+          CarouselImageSlider(photoUrls: room?.imageUrls ?? []),
           const SizedBox(height: 8),
-          Text(
-            room?.name ?? '',
-            style: textStyle22,
-          ),
+          Text(room?.name ?? '', style: textStyle22),
           const SizedBox(height: 8),
-          Peculiarities(
-            peculiarities: room != null ? room.peculiarities : [],
-          ),
+          Peculiarities(peculiarities: room != null ? room.peculiarities : []),
           const SizedBox(height: 8),
           Container(
             padding:
@@ -87,15 +91,13 @@ class _HotelRoomState extends State<HotelRoom> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: const [
+              children: [
                 Text(
                   'Подробнее о номере',
-                  style: TextStyle(
-                      color: AppColors.lightBlue,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500),
+                  style: textStyle16.copyWith(
+                      color: AppColors.lightBlue, fontWeight: FontWeight.w500),
                 ),
-                Icon(
+                const Icon(
                   Icons.chevron_right_rounded,
                   color: AppColors.lightBlue,
                 )
@@ -105,25 +107,17 @@ class _HotelRoomState extends State<HotelRoom> {
           const SizedBox(height: 16),
           Row(
             children: [
-              Text(
-                '${formatPrice(room?.price ?? 0)} ₽',
-                style:
-                    const TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
-              ),
+              Text('${formatPrice(room?.price ?? 0)} ₽', style: textStyle30),
               const SizedBox(width: 8),
-              Text(
-                room?.pricePer ?? '',
-                style: const TextStyle(fontSize: 16, color: AppColors.grey),
-              )
+              Text(room?.pricePer ?? '',
+                  style: textStyle16.copyWith(color: AppColors.grey))
             ],
           ),
           const SizedBox(height: 16),
           CustomButton(
             title: 'Выбрать номер',
-            onPress: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const BookingRoom()));
-            },
+            onPress: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const BookingRoom())),
           )
         ],
       ),

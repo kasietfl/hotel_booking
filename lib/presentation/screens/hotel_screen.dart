@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:hotel_booking/data/models/hotel_model.dart';
 import 'package:hotel_booking/presentation/bloc/hotel_bloc/hotel_bloc.dart';
 import 'package:hotel_booking/presentation/screens/hotel_room.dart';
@@ -32,11 +34,16 @@ class _HotelScreenState extends State<HotelScreen> {
       ),
       body: BlocConsumer<HotelBloc, HotelState>(listener: (context, state) {
         if (state is HotelError) {
-          print(state.error);
+          Fluttertoast.showToast(
+              msg: state.error,
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              backgroundColor: Colors.red,
+              textColor: Colors.white);
         }
       }, builder: (context, state) {
         if (state is HotelLoading) {
-          return const CircularProgressIndicator();
+          return const Center(child: CircularProgressIndicator());
         } else if (state is HotelLoaded) {
           hotel = state.hotel;
         }
@@ -50,35 +57,22 @@ class _HotelScreenState extends State<HotelScreen> {
                     CarouselImageSlider(photoUrls: hotel?.imageUrls ?? []),
                     const SizedBox(height: 8),
                     RatingBlock(
-                      rating: hotel?.rating,
-                      ratingName: hotel?.ratingName,
-                    ),
+                        rating: hotel?.rating, ratingName: hotel?.ratingName),
                     const SizedBox(height: 8),
-                    Text(
-                      hotel?.name ?? "",
-                      style: const TextStyle(
-                          fontSize: 22, fontWeight: FontWeight.w500),
-                    ),
+                    Text(hotel?.name ?? "", style: textStyle22),
                     const SizedBox(height: 8),
-                    Text(
-                      hotel?.adress ?? '',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.lightBlue),
-                    ),
+                    Text(hotel?.adress ?? '',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.lightBlue)),
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                        Text(
-                          'от ${formatPrice(hotel?.minimalPrice ?? 0)} ₽',
-                          style: const TextStyle(
-                              fontSize: 30, fontWeight: FontWeight.w600),
-                        ),
+                        Text('от ${formatPrice(hotel?.minimalPrice ?? 0)} ₽',
+                            style: textStyle30),
                         const SizedBox(width: 8),
-                        const Text(
-                          'за тур с перелётом',
-                          style: TextStyle(fontSize: 16, color: AppColors.grey),
-                        )
+                        Text('за тур с перелётом',
+                            style: textStyle16.copyWith(color: AppColors.grey))
                       ],
                     )
                   ],
@@ -89,20 +83,15 @@ class _HotelScreenState extends State<HotelScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Об отеле',
-                      style: textStyle22,
-                    ),
+                    const Text('Об отеле', style: textStyle22),
                     const SizedBox(height: 16),
                     Peculiarities(
                         peculiarities: hotel != null
                             ? hotel!.aboutTheHotel.peculiarities
                             : []),
                     const SizedBox(height: 12),
-                    Text(
-                      hotel?.aboutTheHotel.description ?? "",
-                      style: const TextStyle(fontSize: 16),
-                    ),
+                    Text(hotel?.aboutTheHotel.description ?? "",
+                        style: textStyle16),
                     const SizedBox(height: 16),
                     Container(
                       padding: const EdgeInsets.all(15),
@@ -128,21 +117,17 @@ class _HotelScreenState extends State<HotelScreen> {
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 12,
-              ),
+              const SizedBox(height: 12),
               Container(
                 color: Colors.white,
                 padding: const EdgeInsets.only(
                     top: 12, left: 16, right: 16, bottom: 28),
                 child: CustomButton(
                   title: 'К выбору номера',
-                  onPress: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const HotelRoom()));
-                  },
+                  onPress: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => HotelRoom(title: hotel?.name))),
                 ),
               )
             ],
@@ -161,20 +146,15 @@ class _HotelScreenState extends State<HotelScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(title,
-                style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.darkGrey)),
+                style: textStyle16.copyWith(
+                    fontWeight: FontWeight.w500, color: AppColors.darkGrey)),
             const Text('Самое необходимое',
                 style: TextStyle(
                     fontWeight: FontWeight.w500, color: AppColors.grey)),
           ],
         ),
         const Spacer(),
-        const Icon(
-          Icons.chevron_right_rounded,
-          color: AppColors.darkGrey,
-        )
+        const Icon(Icons.chevron_right_rounded, color: AppColors.darkGrey)
       ],
     );
   }

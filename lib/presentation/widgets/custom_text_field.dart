@@ -4,6 +4,7 @@ import 'package:hotel_booking/utils/colors.dart';
 
 class CustomTextField extends StatelessWidget {
   final String? hintText;
+  final String? validatorText;
   final TextInputType? textInputType;
   final TextEditingController? controller;
   final List<TextInputFormatter>? inputFormatters;
@@ -14,6 +15,7 @@ class CustomTextField extends StatelessWidget {
     this.textInputType,
     this.controller,
     this.inputFormatters,
+    this.validatorText,
   });
 
   @override
@@ -26,7 +28,15 @@ class CustomTextField extends StatelessWidget {
         child: TextFormField(
           inputFormatters: inputFormatters,
           keyboardType: textInputType,
-          validator: (value) => value!.isEmpty ? "gecnj" : null,
+          validator: (value) {
+            if (value!.isEmpty) {
+              return "validatorText";
+            } else if (textInputType == TextInputType.emailAddress &&
+                !isEmailValid(value)) {
+              return 'Введите корректную почту';
+            }
+            return null;
+          },
           decoration: InputDecoration(
             hintText: hintText,
             label: Text(hintText ?? ""),
@@ -37,5 +47,12 @@ class CustomTextField extends StatelessWidget {
             border: InputBorder.none,
           ),
         ));
+  }
+
+  bool isEmailValid(String email) {
+    final RegExp regex = RegExp(
+      r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$',
+    );
+    return regex.hasMatch(email);
   }
 }

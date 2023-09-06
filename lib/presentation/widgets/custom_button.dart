@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hotel_booking/utils/colors.dart';
+import 'package:hotel_booking/utils/text_styles.dart';
 
 class CustomButton extends StatelessWidget {
   final String title;
@@ -21,7 +22,7 @@ class CustomButton extends StatelessWidget {
             onPressed: onPress,
             child: Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+              style: textStyle16.copyWith(fontWeight: FontWeight.w500),
             )),
       ),
     );

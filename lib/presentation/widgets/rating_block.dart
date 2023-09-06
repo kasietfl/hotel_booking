@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hotel_booking/utils/colors.dart';
+import 'package:hotel_booking/utils/text_styles.dart';
 
 class RatingBlock extends StatelessWidget {
   final int? rating;
@@ -23,10 +24,8 @@ class RatingBlock extends StatelessWidget {
           ),
           Text(
             '${rating ?? 0} ${ratingName ?? ''}',
-            style: const TextStyle(
-                color: AppColors.yellow,
-                fontSize: 16,
-                fontWeight: FontWeight.w500),
+            style: textStyle16.copyWith(
+                color: AppColors.yellow, fontWeight: FontWeight.w500),
           )
         ],
       ),

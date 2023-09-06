@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hotel_booking/utils/text_styles.dart';
 
 class CustomAppBar extends AppBar {
   CustomAppBar({
@@ -21,10 +22,6 @@ class CustomAppBar extends AppBar {
             centerTitle: true);
 
   static Widget buildTitle(String? title) {
-    return Text(
-      title!,
-      style: const TextStyle(
-          fontSize: 18, fontWeight: FontWeight.w500, color: Colors.black),
-    );
+    return Text(title!, style: textStyle18);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hotel_booking/data/models/booking_model.dart';
 import 'package:hotel_booking/presentation/bloc/booking_bloc/booking_bloc.dart';
 import 'package:hotel_booking/presentation/screens/paid_screen.dart';
@@ -35,17 +36,25 @@ class _BookingRoomState extends State<BookingRoom> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'Бронирование',
-      ),
+          title: 'Бронирование',
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          )),
       body: BlocConsumer<BookingBloc, BookingState>(
         listener: (context, state) {
           if (state is BookingError) {
-            print("error");
+            Fluttertoast.showToast(
+                msg: state.error,
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.CENTER,
+                backgroundColor: Colors.red,
+                textColor: Colors.white);
           }
         },
         builder: (context, state) {
           if (state is BookingLoading) {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           } else if (state is BookingLoaded) {
             bookingInfo = state.bookingInfo;
             totalSum = (bookingInfo?.tourPrice ?? 0) +
@@ -119,28 +128,27 @@ class _BookingRoomState extends State<BookingRoom> {
                         buildTourist(
                             'Первый турист ', Icons.expand_less_rounded),
                         const SizedBox(height: 20),
-                        CustomTextField(
+                        const CustomTextField(
                           hintText: 'Имя',
                         ),
                         const SizedBox(height: 8),
-                        CustomTextField(
+                        const CustomTextField(
                           hintText: 'Фамилия',
                         ),
                         const SizedBox(height: 8),
-                        CustomTextField(
+                        const CustomTextField(
                           hintText: 'Дата рождения',
-                          textInputType: TextInputType.datetime,
                         ),
                         const SizedBox(height: 8),
-                        CustomTextField(
+                        const CustomTextField(
                           hintText: 'Гражданство',
                         ),
                         const SizedBox(height: 8),
-                        CustomTextField(
+                        const CustomTextField(
                           hintText: 'Номер загранпаспорта',
                         ),
                         const SizedBox(height: 8),
-                        CustomTextField(
+                        const CustomTextField(
                           hintText: 'Срок действия загранпаспорта',
                         ),
                       ],
@@ -154,7 +162,21 @@ class _BookingRoomState extends State<BookingRoom> {
                 const SizedBox(height: 8),
                 WhiteBlock(child: buildTourist('Добавить туриста', Icons.add)),
                 const SizedBox(height: 8),
-                buildTotalPrices(),
+                WhiteBlock(
+                  child: Column(
+                    children: [
+                      buildPriceRow('Тур', bookingInfo?.tourPrice ?? 0),
+                      const SizedBox(height: 16),
+                      buildPriceRow(
+                          'Топливный сбор', bookingInfo?.fuelCharge ?? 0),
+                      const SizedBox(height: 16),
+                      buildPriceRow(
+                          'Сервисный сбор', bookingInfo?.serviceCharge ?? 0),
+                      const SizedBox(height: 16),
+                      buildPriceRow('К оплате', totalSum ?? 0, true),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 10),
                 Container(
                   padding: const EdgeInsets.only(
@@ -163,12 +185,12 @@ class _BookingRoomState extends State<BookingRoom> {
                   child: CustomButton(
                       title: 'Оплатить ${formatPrice(totalSum ?? 0)} ₽',
                       onPress: () {
-                        // if (formKey.currentState!.validate()) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const PaidScreen()));
-                        // }
+                        if (formKey.currentState!.validate()) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const PaidScreen()));
+                        }
                       }),
                 )
               ],
@@ -187,14 +209,14 @@ class _BookingRoomState extends State<BookingRoom> {
           flex: 2,
           child: Text(
             title,
-            style: const TextStyle(fontSize: 16, color: Colors.grey),
+            style: textStyle16.copyWith(color: AppColors.grey),
           ),
         ),
         Expanded(
           flex: 3,
           child: Text(
             details,
-            style: const TextStyle(fontSize: 16),
+            style: textStyle16,
           ),
         )
       ],
@@ -240,76 +262,31 @@ class _BookingRoomState extends State<BookingRoom> {
             textInputType: TextInputType.phone,
           ),
           const SizedBox(height: 8),
-          CustomTextField(
+          const CustomTextField(
             hintText: 'Почта',
             textInputType: TextInputType.emailAddress,
           ),
           const SizedBox(height: 8),
           const Text(
-            'Эти данные никому не передаются. После оплаты мы вышли чек на указанный вами номер и почту',
-            style: TextStyle(color: AppColors.grey),
-          )
+              'Эти данные никому не передаются. После оплаты мы вышли чек на указанный вами номер и почту',
+              style: TextStyle(color: AppColors.grey))
         ],
       ),
     );
   }
 
-  Widget buildTotalPrices() {
-    return WhiteBlock(
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Тур',
-                  style: TextStyle(fontSize: 16, color: AppColors.grey)),
-              Text(
-                "${formatPrice(bookingInfo?.tourPrice ?? 0)} ₽",
-                style: const TextStyle(fontSize: 16),
-              )
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Топливный сбор',
-                  style: TextStyle(fontSize: 16, color: AppColors.grey)),
-              Text(
-                '${formatPrice(bookingInfo?.fuelCharge ?? 0)} ₽',
-                style: const TextStyle(fontSize: 16),
-              )
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Сервисный сбор',
-                  style: TextStyle(fontSize: 16, color: AppColors.grey)),
-              Text(
-                '${formatPrice(bookingInfo?.serviceCharge ?? 0)} ₽',
-                style: const TextStyle(fontSize: 16),
-              )
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('К оплате',
-                  style: TextStyle(fontSize: 16, color: AppColors.grey)),
-              Text(
-                '${formatPrice(totalSum ?? 0)} ₽',
-                style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.lightBlue),
-              )
-            ],
-          )
-        ],
-      ),
+  Widget buildPriceRow(String label, int price, [bool isTotal = false]) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: textStyle16.copyWith(color: AppColors.grey),
+        ),
+        Text('${formatPrice(price)} ₽',
+            style: textStyle16.copyWith(
+                color: isTotal ? AppColors.lightBlue : Colors.black)),
+      ],
     );
   }
 }
