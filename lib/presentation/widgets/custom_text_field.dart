@@ -4,7 +4,6 @@ import 'package:hotel_booking/utils/colors.dart';
 
 class CustomTextField extends StatefulWidget {
   final String? hintText;
-  final String? validatorText;
   final TextInputType? textInputType;
   final TextEditingController? controller;
   final List<TextInputFormatter>? inputFormatters;
@@ -15,7 +14,6 @@ class CustomTextField extends StatefulWidget {
     this.textInputType,
     this.controller,
     this.inputFormatters,
-    this.validatorText,
   }) : super(key: key);
 
   @override
@@ -60,6 +58,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         decoration: InputDecoration(
           hintText: widget.hintText,
           label: Text(widget.hintText ?? ""),
+          labelStyle: const TextStyle(color: Colors.grey),
           hintStyle: const TextStyle(color: Colors.grey),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),

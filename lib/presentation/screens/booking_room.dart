@@ -160,7 +160,7 @@ class _BookingRoomState extends State<BookingRoom> {
                       onPress: () {
                         bool isValidForm1 = infoKey.currentState!.validate();
                         bool isValidForm2 = formKey.currentState!.validate();
-                        if (true) {
+                        if (isValidForm1 && isValidForm2) {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -195,6 +195,40 @@ class _BookingRoomState extends State<BookingRoom> {
           ),
         )
       ],
+    );
+  }
+
+  Widget buildCustomerInfo() {
+    return WhiteBlock(
+      child: Form(
+        key: infoKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Информация о покупателе', style: textStyle22),
+            const SizedBox(height: 20),
+            CustomTextField(
+              hintText: 'Номер телефона',
+              inputFormatters: [
+                MaskTextInputFormatter(
+                    mask: '+7 (***) ***-**-**',
+                    filter: {"*": RegExp(r'[0-9]')},
+                    type: MaskAutoCompletionType.lazy)
+              ],
+              textInputType: TextInputType.phone,
+            ),
+            const SizedBox(height: 8),
+            const CustomTextField(
+              hintText: 'Почта',
+              textInputType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 8),
+            const Text(
+                'Эти данные никому не передаются. После оплаты мы вышли чек на указанный вами номер и почту',
+                style: TextStyle(color: AppColors.grey))
+          ],
+        ),
+      ),
     );
   }
 
@@ -261,40 +295,6 @@ class _BookingRoomState extends State<BookingRoom> {
     );
   }
 
-  Widget buildCustomerInfo() {
-    return WhiteBlock(
-      child: Form(
-        key: infoKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Информация о покупателе', style: textStyle22),
-            const SizedBox(height: 20),
-            CustomTextField(
-              hintText: 'Номер телефона',
-              inputFormatters: [
-                MaskTextInputFormatter(
-                    mask: '+7 (***) ***-**-**',
-                    filter: {"*": RegExp(r'[0-9]')},
-                    type: MaskAutoCompletionType.lazy)
-              ],
-              textInputType: TextInputType.phone,
-            ),
-            const SizedBox(height: 8),
-            const CustomTextField(
-              hintText: 'Почта',
-              textInputType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 8),
-            const Text(
-                'Эти данные никому не передаются. После оплаты мы вышли чек на указанный вами номер и почту',
-                style: TextStyle(color: AppColors.grey))
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget buildPriceRow(String label, int price, [bool isTotal = false]) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -305,7 +305,8 @@ class _BookingRoomState extends State<BookingRoom> {
         ),
         Text('${formatPrice(price)} ₽',
             style: textStyle16.copyWith(
-                color: isTotal ? AppColors.lightBlue : Colors.black)),
+                color: isTotal ? AppColors.lightBlue : Colors.black,
+                fontWeight: isTotal ? FontWeight.w600 : FontWeight.w400)),
       ],
     );
   }

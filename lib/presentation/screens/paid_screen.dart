@@ -16,8 +16,11 @@ class PaidScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
-        title: 'Заказ оплачен',
-      ),
+          title: 'Заказ оплачен',
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          )),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

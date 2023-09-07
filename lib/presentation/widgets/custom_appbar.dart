@@ -18,10 +18,11 @@ class CustomAppBar extends AppBar {
             title: buildTitle(title),
             backgroundColor: Colors.white,
             bottom: bottom,
+            titleTextStyle: textStyle18,
             iconTheme: const IconThemeData(color: Colors.black),
             centerTitle: true);
 
   static Widget buildTitle(String? title) {
-    return Text(title!, style: textStyle18);
+    return Text(title!);
   }
 }

@@ -56,11 +56,19 @@ class _HotelRoomState extends State<HotelRoom> {
           } else if (state is RoomsLoaded) {
             rooms = state.rooms.rooms;
           }
-          return ListView.separated(
-              itemBuilder: (context, index) =>
-                  buildRoomItem(context, rooms?[index]),
-              separatorBuilder: (context, index) => const SizedBox(height: 8),
-              itemCount: rooms?.length ?? 0);
+          return Column(
+            children: [
+              const SizedBox(height: 8),
+              Expanded(
+                child: ListView.separated(
+                    itemBuilder: (context, index) =>
+                        buildRoomItem(context, rooms?[index]),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 8),
+                    itemCount: rooms?.length ?? 0),
+              ),
+            ],
+          );
         },
       ),
     );

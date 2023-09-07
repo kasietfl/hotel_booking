@@ -12,6 +12,7 @@ class CarouselImageSlider extends StatefulWidget {
 
 class _CarouselImageSliderState extends State<CarouselImageSlider> {
   int currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -65,7 +66,7 @@ class _CarouselImageSliderState extends State<CarouselImageSlider> {
       );
     }
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 7.5),
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(5)),
       child: Row(

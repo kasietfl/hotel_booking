@@ -56,7 +56,7 @@ class _HotelScreenState extends State<HotelScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CarouselImageSlider(photoUrls: hotel?.imageUrls ?? []),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 16),
                     RatingBlock(
                         rating: hotel?.rating, ratingName: hotel?.ratingName),
                     const SizedBox(height: 8),
