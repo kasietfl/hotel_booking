@@ -22,6 +22,7 @@ class BookingRoom extends StatefulWidget {
 }
 
 class _BookingRoomState extends State<BookingRoom> {
+  final infoKey = GlobalKey<FormState>();
   final formKey = GlobalKey<FormState>();
   Booking? bookingInfo;
   int? totalSum;
@@ -47,7 +48,6 @@ class _BookingRoomState extends State<BookingRoom> {
             Fluttertoast.showToast(
                 msg: state.error,
                 toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.CENTER,
                 backgroundColor: Colors.red,
                 textColor: Colors.white);
           }
@@ -86,8 +86,7 @@ class _BookingRoomState extends State<BookingRoom> {
                           style: const TextStyle(
                               fontWeight: FontWeight.w500,
                               color: AppColors.lightBlue),
-                        ),
-                        const SizedBox(height: 16),
+                        )
                       ]),
                 ),
                 const SizedBox(height: 8),
@@ -121,38 +120,11 @@ class _BookingRoomState extends State<BookingRoom> {
                 buildCustomerInfo(),
                 const SizedBox(height: 8),
                 WhiteBlock(
-                  child: Form(
-                    key: formKey,
-                    child: Column(
-                      children: [
-                        buildTourist(
-                            'Первый турист ', Icons.expand_less_rounded),
-                        const SizedBox(height: 20),
-                        const CustomTextField(
-                          hintText: 'Имя',
-                        ),
-                        const SizedBox(height: 8),
-                        const CustomTextField(
-                          hintText: 'Фамилия',
-                        ),
-                        const SizedBox(height: 8),
-                        const CustomTextField(
-                          hintText: 'Дата рождения',
-                        ),
-                        const SizedBox(height: 8),
-                        const CustomTextField(
-                          hintText: 'Гражданство',
-                        ),
-                        const SizedBox(height: 8),
-                        const CustomTextField(
-                          hintText: 'Номер загранпаспорта',
-                        ),
-                        const SizedBox(height: 8),
-                        const CustomTextField(
-                          hintText: 'Срок действия загранпаспорта',
-                        ),
-                      ],
-                    ),
+                  child: Column(
+                    children: [
+                      buildTourist('Первый турист ', Icons.expand_less_rounded),
+                      buildForm()
+                    ],
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -160,7 +132,8 @@ class _BookingRoomState extends State<BookingRoom> {
                     child: buildTourist(
                         'Второй турист', Icons.expand_more_rounded)),
                 const SizedBox(height: 8),
-                WhiteBlock(child: buildTourist('Добавить туриста', Icons.add)),
+                WhiteBlock(
+                    child: buildTourist('Добавить туриста', Icons.add, true)),
                 const SizedBox(height: 8),
                 WhiteBlock(
                   child: Column(
@@ -185,7 +158,9 @@ class _BookingRoomState extends State<BookingRoom> {
                   child: CustomButton(
                       title: 'Оплатить ${formatPrice(totalSum ?? 0)} ₽',
                       onPress: () {
-                        if (formKey.currentState!.validate()) {
+                        bool isValidForm1 = infoKey.currentState!.validate();
+                        bool isValidForm2 = formKey.currentState!.validate();
+                        if (true) {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -223,7 +198,7 @@ class _BookingRoomState extends State<BookingRoom> {
     );
   }
 
-  Widget buildTourist(String text, IconData icon) {
+  Widget buildTourist(String text, IconData icon, [bool isIconAdd = false]) {
     return Column(
       children: [
         Row(
@@ -234,9 +209,17 @@ class _BookingRoomState extends State<BookingRoom> {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                  color: AppColors.lightBlue.withOpacity(.1),
+                  color: isIconAdd
+                      ? AppColors.lightBlue
+                      : AppColors.lightBlue.withOpacity(.1),
                   borderRadius: BorderRadius.circular(6)),
-              child: Icon(icon, color: AppColors.lightBlue),
+              child: GestureDetector(
+                onTap: () {
+                  print("tap");
+                },
+                child: Icon(icon,
+                    color: isIconAdd ? Colors.white : AppColors.lightBlue),
+              ),
             )
           ],
         )
@@ -244,33 +227,70 @@ class _BookingRoomState extends State<BookingRoom> {
     );
   }
 
+  Widget buildForm() {
+    return Form(
+      key: formKey,
+      child: Column(
+        children: const [
+          SizedBox(height: 20),
+          CustomTextField(
+            hintText: 'Имя',
+          ),
+          SizedBox(height: 8),
+          CustomTextField(
+            hintText: 'Фамилия',
+          ),
+          SizedBox(height: 8),
+          CustomTextField(
+            hintText: 'Дата рождения',
+          ),
+          SizedBox(height: 8),
+          CustomTextField(
+            hintText: 'Гражданство',
+          ),
+          SizedBox(height: 8),
+          CustomTextField(
+            hintText: 'Номер загранпаспорта',
+          ),
+          SizedBox(height: 8),
+          CustomTextField(
+            hintText: 'Срок действия загранпаспорта',
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget buildCustomerInfo() {
     return WhiteBlock(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Информация о покупателе', style: textStyle22),
-          const SizedBox(height: 20),
-          CustomTextField(
-            hintText: 'Номер телефона',
-            inputFormatters: [
-              MaskTextInputFormatter(
-                  mask: '+7 (***) ***-**-**',
-                  filter: {"*": RegExp(r'[0-9]')},
-                  type: MaskAutoCompletionType.lazy)
-            ],
-            textInputType: TextInputType.phone,
-          ),
-          const SizedBox(height: 8),
-          const CustomTextField(
-            hintText: 'Почта',
-            textInputType: TextInputType.emailAddress,
-          ),
-          const SizedBox(height: 8),
-          const Text(
-              'Эти данные никому не передаются. После оплаты мы вышли чек на указанный вами номер и почту',
-              style: TextStyle(color: AppColors.grey))
-        ],
+      child: Form(
+        key: infoKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Информация о покупателе', style: textStyle22),
+            const SizedBox(height: 20),
+            CustomTextField(
+              hintText: 'Номер телефона',
+              inputFormatters: [
+                MaskTextInputFormatter(
+                    mask: '+7 (***) ***-**-**',
+                    filter: {"*": RegExp(r'[0-9]')},
+                    type: MaskAutoCompletionType.lazy)
+              ],
+              textInputType: TextInputType.phone,
+            ),
+            const SizedBox(height: 8),
+            const CustomTextField(
+              hintText: 'Почта',
+              textInputType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 8),
+            const Text(
+                'Эти данные никому не передаются. После оплаты мы вышли чек на указанный вами номер и почту',
+                style: TextStyle(color: AppColors.grey))
+          ],
+        ),
       ),
     );
   }

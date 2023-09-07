@@ -37,13 +37,14 @@ class _HotelScreenState extends State<HotelScreen> {
           Fluttertoast.showToast(
               msg: state.error,
               toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
               backgroundColor: Colors.red,
               textColor: Colors.white);
         }
       }, builder: (context, state) {
         if (state is HotelLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
         } else if (state is HotelLoaded) {
           hotel = state.hotel;
         }

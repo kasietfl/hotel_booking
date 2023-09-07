@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hotel_booking/utils/colors.dart';
 
-class CustomTextField extends StatelessWidget {
+class CustomTextField extends StatefulWidget {
   final String? hintText;
   final String? validatorText;
   final TextInputType? textInputType;
@@ -10,49 +10,66 @@ class CustomTextField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
 
   const CustomTextField({
-    super.key,
+    Key? key,
     this.hintText,
     this.textInputType,
     this.controller,
     this.inputFormatters,
     this.validatorText,
-  });
+  }) : super(key: key);
+
+  @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  bool isValid = true;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: BoxDecoration(
-          color: AppColors.lightGrey,
-          borderRadius: BorderRadius.circular(10),
+      decoration: BoxDecoration(
+        color: isValid
+            ? AppColors.lightGrey
+            : AppColors.errorColor.withOpacity(.15),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: TextFormField(
+        inputFormatters: widget.inputFormatters,
+        keyboardType: widget.textInputType,
+        validator: (value) {
+          if (value!.isEmpty) {
+            setState(() {
+              isValid = false;
+            });
+            return "Это поле не может быть пустым";
+          } else if (widget.textInputType == TextInputType.emailAddress &&
+              !validateEmail(value)) {
+            setState(() {
+              isValid = false;
+            });
+            return 'Введите корректную почту';
+          } else {
+            setState(() {
+              isValid = true;
+            });
+          }
+
+          return null;
+        },
+        decoration: InputDecoration(
+          hintText: widget.hintText,
+          label: Text(widget.hintText ?? ""),
+          hintStyle: const TextStyle(color: Colors.grey),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+          border: InputBorder.none,
         ),
-        child: TextFormField(
-          inputFormatters: inputFormatters,
-          keyboardType: textInputType,
-          validator: (value) {
-            if (value!.isEmpty) {
-              return "validatorText";
-            } else if (textInputType == TextInputType.emailAddress &&
-                !isEmailValid(value)) {
-              return 'Введите корректную почту';
-            }
-            return null;
-          },
-          decoration: InputDecoration(
-            hintText: hintText,
-            label: Text(hintText ?? ""),
-            labelStyle: const TextStyle(color: AppColors.labelColor),
-            hintStyle: const TextStyle(color: AppColors.labelColor),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
-            border: InputBorder.none,
-          ),
-        ));
+      ),
+    );
   }
 
-  bool isEmailValid(String email) {
-    final RegExp regex = RegExp(
-      r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$',
-    );
-    return regex.hasMatch(email);
-  }
+  bool validateEmail(String email) => RegExp(
+          r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+      .hasMatch(email.trim());
 }

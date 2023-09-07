@@ -46,7 +46,6 @@ class _HotelRoomState extends State<HotelRoom> {
             Fluttertoast.showToast(
                 msg: state.error,
                 toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.CENTER,
                 backgroundColor: Colors.red,
                 textColor: Colors.white);
           }
@@ -58,12 +57,9 @@ class _HotelRoomState extends State<HotelRoom> {
             rooms = state.rooms.rooms;
           }
           return ListView.separated(
-              shrinkWrap: true,
               itemBuilder: (context, index) =>
                   buildRoomItem(context, rooms?[index]),
-              separatorBuilder: (context, index) => const SizedBox(
-                    height: 8,
-                  ),
+              separatorBuilder: (context, index) => const SizedBox(height: 8),
               itemCount: rooms?.length ?? 0);
         },
       ),
@@ -81,29 +77,7 @@ class _HotelRoomState extends State<HotelRoom> {
           const SizedBox(height: 8),
           Peculiarities(peculiarities: room != null ? room.peculiarities : []),
           const SizedBox(height: 8),
-          Container(
-            padding:
-                const EdgeInsets.only(left: 10, right: 2, top: 5, bottom: 5),
-            decoration: BoxDecoration(
-                color: AppColors.lightBlue.withOpacity(.1),
-                borderRadius: BorderRadius.circular(5)),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Подробнее о номере',
-                  style: textStyle16.copyWith(
-                      color: AppColors.lightBlue, fontWeight: FontWeight.w500),
-                ),
-                const Icon(
-                  Icons.chevron_right_rounded,
-                  color: AppColors.lightBlue,
-                )
-              ],
-            ),
-          ),
+          buildMoreButton(),
           const SizedBox(height: 16),
           Row(
             children: [
@@ -118,6 +92,31 @@ class _HotelRoomState extends State<HotelRoom> {
             title: 'Выбрать номер',
             onPress: () => Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const BookingRoom())),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget buildMoreButton() {
+    return Container(
+      padding: const EdgeInsets.only(left: 10, right: 2, top: 5, bottom: 5),
+      decoration: BoxDecoration(
+          color: AppColors.lightBlue.withOpacity(.1),
+          borderRadius: BorderRadius.circular(5)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            'Подробнее о номере',
+            style: textStyle16.copyWith(
+                color: AppColors.lightBlue, fontWeight: FontWeight.w500),
+          ),
+          const Icon(
+            Icons.chevron_right_rounded,
+            color: AppColors.lightBlue,
           )
         ],
       ),
