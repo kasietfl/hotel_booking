@@ -27,7 +27,7 @@ class _HotelRoomState extends State<HotelRoom> {
 
   @override
   void initState() {
-    BlocProvider.of<RoomsBloc>(context).add(GetRoomsEvent());
+    context.read<RoomsBloc>().add(GetRoomsEvent());
     super.initState();
   }
 

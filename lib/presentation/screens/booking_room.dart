@@ -26,10 +26,18 @@ class _BookingRoomState extends State<BookingRoom> {
   final formKey = GlobalKey<FormState>();
   Booking? bookingInfo;
   int? totalSum;
+  int touristCounter = 1;
+
+  List<CounterTitles> counterTitles = [
+    CounterTitles(title: 'Первый', isVisible: true),
+    CounterTitles(title: 'Второй'),
+    CounterTitles(title: 'Третий'),
+    CounterTitles(title: 'Четвертый')
+  ];
 
   @override
   void initState() {
-    BlocProvider.of<BookingBloc>(context).add(GetBookingInfo());
+    context.read<BookingBloc>().add(GetBookingInfo());
     super.initState();
   }
 
@@ -119,21 +127,53 @@ class _BookingRoomState extends State<BookingRoom> {
                 const SizedBox(height: 8),
                 buildCustomerInfo(),
                 const SizedBox(height: 8),
-                WhiteBlock(
-                  child: Column(
-                    children: [
-                      buildTourist('Первый турист ', Icons.expand_less_rounded),
-                      buildForm()
-                    ],
-                  ),
-                ),
+                ListView.separated(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: touristCounter,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 8),
+                    itemBuilder: (context, index) {
+                      return WhiteBlock(
+                        child: Column(
+                          children: [
+                            GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    for (var element in counterTitles) {
+                                      element.isVisible = false;
+                                    }
+                                    counterTitles[index].isVisible = true;
+                                  });
+                                },
+                                child: buildTourist(
+                                    text:
+                                        '${counterTitles[index].title} турист ',
+                                    isExpanded: counterTitles[index].isVisible,
+                                    isAdd: false)),
+                            Visibility(
+                                visible: counterTitles[index].isVisible,
+                                child: buildForm())
+                          ],
+                        ),
+                      );
+                    }),
                 const SizedBox(height: 8),
                 WhiteBlock(
-                    child: buildTourist(
-                        'Второй турист', Icons.expand_more_rounded)),
-                const SizedBox(height: 8),
-                WhiteBlock(
-                    child: buildTourist('Добавить туриста', Icons.add, true)),
+                    child: GestureDetector(
+                  onTap: () {
+                    if (formKey.currentState!.validate()) {
+                      setState(() {
+                        for (var element in counterTitles) {
+                          element.isVisible = false;
+                        }
+                        touristCounter++;
+                      });
+                    }
+                  },
+                  child: buildTourist(
+                      text: 'Добавить туриста', isExpanded: false, isAdd: true),
+                )),
                 const SizedBox(height: 8),
                 WhiteBlock(
                   child: Column(
@@ -232,31 +272,30 @@ class _BookingRoomState extends State<BookingRoom> {
     );
   }
 
-  Widget buildTourist(String text, IconData icon, [bool isIconAdd = false]) {
-    return Column(
+  Widget buildTourist(
+      {required String text, required bool isExpanded, required bool isAdd}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(text, style: textStyle22),
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                  color: isIconAdd
-                      ? AppColors.lightBlue
-                      : AppColors.lightBlue.withOpacity(.1),
-                  borderRadius: BorderRadius.circular(6)),
-              child: GestureDetector(
-                onTap: () {
-                  print("tap");
-                },
-                child: Icon(icon,
-                    color: isIconAdd ? Colors.white : AppColors.lightBlue),
-              ),
-            )
-          ],
-        )
+        Text(text, style: textStyle22),
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: isAdd
+                ? AppColors.lightBlue
+                : AppColors.lightBlue.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Icon(
+            isAdd
+                ? Icons.add
+                : (isExpanded
+                    ? Icons.expand_less_rounded
+                    : Icons.expand_more_rounded),
+            color: isAdd ? Colors.white : AppColors.lightBlue,
+          ),
+        ),
       ],
     );
   }
@@ -310,4 +349,11 @@ class _BookingRoomState extends State<BookingRoom> {
       ],
     );
   }
+}
+
+class CounterTitles {
+  final String title;
+  bool isVisible;
+
+  CounterTitles({required this.title, this.isVisible = false});
 }
